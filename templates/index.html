@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Translation Service</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            padding: 0;
+            background-color: #f4f4f4;
+        }
+
+        h1 {
+            text-align: center;
+            color: #333;
+        }
+
+        #translationForm {
+            max-width: 400px;
+            margin: 20px auto;
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        label {
+            display: block;
+            margin-bottom: 10px;
+            color: #555;
+        }
+
+        input {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 15px;
+            box-sizing: border-box;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            font-size: 16px;
+        }
+
+        button {
+            background-color: #4caf50;
+            color: #fff;
+            padding: 10px 15px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+
+        button:hover {
+            background-color: #45a049;
+        }
+
+        #translationResult {
+            margin-top: 20px;
+            font-size: 18px;
+            color: #333;
+            display: none; /* Initially hide the result div */
+            align-items: center;
+            justify-content: center;
+            background-color: #e6e6e6;
+            padding: 10px;
+            border-radius: 4px;
+        }
+
+        .loader {
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #3498db;
+            border-radius: 50%;
+            width: 20px;
+            height: 20px;
+            animation: spin 1s linear infinite;
+            display: inline-block;
+            margin-right: 10px;
+            vertical-align: middle;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+    <h1>Welcome to the translation service!</h1>
+    <form id="translationForm">
+        <label for="text_to_translate">Enter text in English to translate in Hindi:</label>
+        <input type="text" id="text_to_translate" name="text_to_translate" required>
+        <button type="button" onclick="translateText()">Translate</button>
+        <div id="loader" class="loader" style="display: none;"></div> <!-- Loader element -->
+    </form>
+    <br>
+    <br>
+    <div id="translationResult"></div>
+
+    <script>
+        function translateText() {
+            // Get the input text
+            var textToTranslate = document.getElementById('text_to_translate').value;
+
+            // Display loader
+            document.getElementById('loader').style.display = 'inline-block';
+
+            // Make a POST request to the /translate endpoint
+            fetch('/translate', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    text: textToTranslate
+                }),
+            })
+            .then(response => response.json())
+            .then(data => {
+                // Hide loader
+                document.getElementById('loader').style.display = 'none';
+
+                // Update the translation result on the page
+                var resultDiv = document.getElementById('translationResult');
+                resultDiv.style.display = 'flex';
+                resultDiv.innerHTML = 'Translation: ' + data.translation;
+            })
+            .catch((error) => {
+                // Hide loader on error
+                document.getElementById('loader').style.display = 'none';
+                console.error('Error:', error);
+            });
+        }
+    </script>
+</body>
+</html>
